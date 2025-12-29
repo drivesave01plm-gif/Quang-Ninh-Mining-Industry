@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ngành Mỏ Quảng Ninh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#0b1d2a; --fg:#eaf2f8; --accent:#f6b10a; }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui;background:var(--bg);color:var(--fg)}
+    header{position:relative;height:100vh;display:grid;place-items:center;overflow:hidden}
+    header img.hero{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(0.45)}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px}
+    .hero-content{position:relative;text-align:center;z-index:1}
+    h1{font-size:2.4rem;margin:0 0 12px} p.lead{max-width:700px;margin:0 auto 16px;font-size:1.1rem}
+    .btn{display:inline-block;background:var(--accent);color:#1a1a1a;padding:12px 18px;border-radius:8px;font-weight:600;text-decoration:none}
+    section{padding:40px 0;border-top:1px solid #204055}
+    h2{font-size:1.8rem;margin:0 0 12px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .card{background:#112b3a;border:1px solid #204055;border-radius:12px;padding:16px}
+    .card video {width: 100%; border-radius: 8px;}
+    .card img{width:100%;border-radius:8px;margin-bottom:10px}
+    figure{margin:0} figcaption{font-size:0.9rem;color:#bcd}
+    .audio-bar{display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;margin-top:14px}
+    .audio-bar button{background:#17384a;color:var(--fg);padding:8px 12px;border:1px solid #2a546b;border-radius:8px;cursor:pointer}
+    .progress-wrap{width:100%;max-width:420px;padding:6px 0}
+    .progress-wrap input[type="range"]{
+      -webkit-appearance:none; appearance:none;
+      width:100%; height:10px; border-radius:999px; background:linear-gradient(90deg,var(--accent) 0%, #2a546b 0%);
+      outline:none;}
+    .progress-wrap input[type="range"]::-webkit-slider-thumb{
+      -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 6px rgba(246,177,10,0.08);
+      border:2px solid rgba(0,0,0,0.12); margin-top:-3px;}
+    .volume-controls{display:flex;gap:8px;align-items:center}
+    .volume-controls button{width:40px;height:36px;border-radius:8px;font-weight:700}
+    .song-title{margin-top:6px;text-align:center;font-weight:600;color:var(--fg)}
+    .song-title, .author, .singer {
+      margin: 0;
+      line-height: 1;      
+      font-size: 0.95rem; 
+      text-align: center;}
+    .author, .singer { color: #bcd; font-weight: 400; }
+
+    header img.hero{transform-origin:center center; animation:heroZoom 18s ease-in-out infinite alternate;}
+    @keyframes heroZoom{ from{transform:scale(1);} to{transform:scale(1.06);} }
+
+    .card{opacity:0; transform:translateY(18px) scale(.995); transition:opacity .6s cubic-bezier(.2,.9,.3,1), transform .6s cubic-bezier(.2,.9,.3,1);}
+    .card.in-view{opacity:1; transform:none;}
+    .card video, .card img{opacity:0; transition:opacity .2s ease .12s;}
+    .card.in-view img, .card.in-view video{opacity:1;}
+
+    .btn{transition:transform .18s ease, box-shadow .18s;}
+    .btn:hover{transform:translateY(-4px) scale(1.02); box-shadow:0 8px 22px rgba(246,177,10,0.14);}
+    @keyframes floaty{0%{transform:translateY(0);}50%{transform:translateY(-6px);}100%{transform:translateY(0);}}
+
+    section#nhac{padding:28px 0;display:flex;justify-content:center}
+    section#nhac .card{max-width:720px;width:100%;margin:0 auto;padding:18px;border-radius:12px}
+    @media (max-width:640px){
+      section#nhac{padding:18px 12px}
+      section#nhac .card{max-width:100%;padding:12px}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      header img.hero{animation:none}
+      .hero-content{animation:none}
+      .card, h2, .btn{transition:none; animation:none}
+    }
+
+    .video-wrap{position:relative;overflow:hidden;border-radius:8px;background:#000;aspect-ratio:16/9; margin-bottom:10px;}
+    .video-wrap video{width:100%;height:100%;object-fit:cover;display:block;transition:transform .28s ease}
+    .video-wrap:hover video{transform:scale(1.03)}
+    .video-play-overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);color:var(--fg);border:0;width:72px;height:72px;border-radius:999px;font-size:34px;cursor:pointer}
+    @media (max-width:640px){
+      .video-play-overlay{display:flex}
+    }
+    .video-toggle{position:absolute;right:10px;bottom:10px;z-index:3;background:rgba(0,0,0,0.45);color:var(--fg);border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;cursor:pointer}
+    .video-wrap.expanded{position:fixed;inset:6vh 6vw;z-index:9999;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,0.6)}
+    .video-wrap.expanded video{object-fit:cover;height:100%}
+    body.video-modal-open{overflow:hidden}
+
+    video::-webkit-media-controls-fullscreen-button { display: none !important; }
+    video::-webkit-media-controls-overlay-play-button { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <img class="hero" src="1.jpg" alt="Toàn cảnh mỏ than Quảng Ninh" title="Toàn cảnh mỏ than Quảng Ninh — ảnh toàn cảnh lịch sử và hiện tại">
+    <div class="hero-content">
+      <h1>Ngành Mỏ Quảng Ninh</h1>
+      <p class="lead">Cái nôi công nhân mỏ, trụ cột năng lượng quốc gia, và câu chuyện bền bỉ của người thợ mỏ.</p>
+      <a class="btn" href="#nhac">Khám phá</a>
+    </div>
+  </header>
+
+    <section id="nhac">
+      <div class="card">
+        <div class="audio-bar">
+          <p class="song-title">MV Tình ca Thợ mỏ</p>
+          <p class="author">Sáng tác: Nhạc sĩ Hoàng Vân</p>
+          <p class="singer">Ca sĩ: Tuấn Anh - Ngọc Anh</p>
+          <div class="progress-wrap">
+            <input id="progress" type="range" min="0" max="100" value="0" />
+          </div>
+          <div class="volume-controls">
+            <button id="vol-down" aria-label="Giảm âm lượng">−</button>
+            <button id="toggle" aria-label="Play/Pause">▶</button>
+            <button id="vol-up" aria-label="Tăng âm lượng">+</button>
+          </div>
+          <audio id="bg" src="2.mp3" loop preload="none"></audio>
+        </div>
+      </div>
+    </section>
+
+<script>
+  const btn = document.getElementById("toggle");
+  const bg = document.getElementById("bg");
+  const progress = document.getElementById("progress");
+  const volUp = document.getElementById("vol-up");
+  const volDown = document.getElementById("vol-down");
+
+  function updateToggleButton(){
+    btn.textContent = bg.paused ? '▶' : '||';
+    btn.setAttribute('aria-label', bg.paused ? 'Play' : 'Pause');
+  }
+
+  btn.addEventListener('click', () => {
+    if (bg.paused) {
+      const p = bg.play();
+      if (p && p.then) p.catch(() => {});
+    } else {
+      bg.pause();
+    }
+  });
+
+  bg.addEventListener('timeupdate', () => {
+    if (!isFinite(bg.duration) || bg.duration === 0) return;
+    const pct = (bg.currentTime / bg.duration) * 100;
+    if (!seeking) progress.value = pct;
+    progress.style.background = `linear-gradient(90deg, var(--accent) ${pct}%, #2a546b ${pct}%)`;
+  });
+
+  let seeking = false;
+  progress.addEventListener('input', (e) => {
+    const val = Number(e.target.value);
+    progress.style.background = `linear-gradient(90deg, var(--accent) ${val}%, #2a546b ${val}%)`;
+    seeking = true;
+  });
+  progress.addEventListener('change', (e) => {
+    if (!isFinite(bg.duration) || bg.duration === 0) return;
+    bg.currentTime = (Number(e.target.value) / 100) * bg.duration;
+    seeking = false;
+  });
+
+  function setVolume(v){ bg.volume = Math.min(1, Math.max(0, v)); }
+  volUp.addEventListener('click', () => setVolume((bg.volume || 0) + 0.1));
+  volDown.addEventListener('click', () => setVolume((bg.volume || 0) - 0.1));
+
+  bg.addEventListener('play', updateToggleButton);
+  bg.addEventListener('pause', updateToggleButton);
+  bg.addEventListener('loadedmetadata', () => {
+    progress.value = 0;
+    updateToggleButton();
+  });
+
+  updateToggleButton();
+</script>
+
+
+    <section id="lich-su">
+      <h2>Lịch sử hình thành và đấu tranh</h2> 
+      <p>
+        Quảng Ninh là một trong những cái nôi sớm của giai cấp công nhân Việt Nam; lịch sử thợ mỏ gắn với thời kỳ
+        khai thác than của chủ mỏ Pháp từ cuối thế kỷ XIX và các phong trào đấu tranh yêu nước của thợ mỏ.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <img src="2.jpg" alt="Cảng than Hòn Gai lịch sử">
+          <figure>
+            <figcaption>Mốc mở rộng cảng Hòn Gai phục vụ buôn bán than cuối thế kỷ XIX.</figcaption>
+          </figure>
+        </div>
+        <div class="card">
+          <img src="3.jpg" alt="Tư liệu thợ mỏ">
+          <figure><figcaption>Binh đoàn Than làm lễ xuất quân năm 1967.</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="vai-tro">
+      <h2>Vai trò hiện nay và an ninh năng lượng</h2>
+      <p>
+        Quảng Ninh tập trung khoảng 90% trữ lượng than của cả nước; ngành Than, trọng điểm là TKV, giữ vai trò
+        trụ cột đảm bảo an ninh năng lượng quốc gia và gắn bó mật thiết với sự phát triển của tỉnh.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <img src="4.png" alt="Giàn chống trong lò chợ">
+          <figcaption>Vận hành giàn chống trong lò chợ – biểu tượng công nghệ khai thác hiện đại.</figcaption>
+        </div>
+        <div class="card">
+          <figure>
+            <div class="video-wrap">
+              <video controls controlsList="nofullscreen noremoteplayback nodownload" disablePictureInPicture playsinline src="1.mp4" title="Phỏng vấn thợ mỏ về ca kíp và an toàn"></video>
+              <button class="video-play-overlay" aria-label="Phát video">▶</button>
+              <button class="video-toggle" aria-label="Phóng/thu video">⤢</button>
+            </div>
+            <figcaption>Phỏng vấn: Chia sẻ từ thợ mỏ về ca kíp, kinh nghiệm an toàn.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="con-nguoi">
+      <h2>Con người thợ mỏ</h2>
+      <p>
+        Trong 60 năm phát triển của Quảng Ninh, cộng đồng thợ mỏ bền bỉ đóng góp cho sự phồn thịnh của tỉnh,
+        là “dòng chảy ngầm” bền bỉ và bất diệt trong tiến trình xây dựng địa phương.
+      </p>
+      <div class="grid">
+        <div class="card">
+          <img src="5.jpg" alt="Chân dung thợ mỏ">
+          <figcaption>Chân dung thợ mỏ sau ca làm việc.</figcaption>
+        </div>
+      </div>
+    </section>
+
+    <section id="tuong-lai">
+      <h2>Tương lai xanh và chuyển đổi số</h2>
+      <p>
+        Ngành Than tại Quảng Ninh thúc đẩy số hóa, nâng cao an toàn, hiệu quả và trách nhiệm môi trường; tiếp tục
+        giữ vai trò quan trọng trong bảo đảm năng lượng, đồng thời thích ứng với xu hướng chuyển dịch năng lượng.
+      </p>
+    </section>
+
+  <footer>
+    <div align="center">
+      <small>Nội dung tham khảo: Báo Quảng Ninh, Cổng thông tin Quảng Ninh, Dân Việt, VOV.</small><br/>
+      <small><u><b>cre: Phạm Thu Huyền</b></u></small>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in-view');
+            observer.unobserve(e.target);
+          }
+        });
+      }, {threshold: 0.15});
+      document.querySelectorAll('.card, section h2, .hero-content').forEach(el => observer.observe(el));
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const body = document.body;
+      document.querySelectorAll('.video-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const wrap = btn.closest('.video-wrap');
+          const isOpen = wrap.classList.toggle('expanded');
+          if (isOpen) body.classList.add('video-modal-open'); else body.classList.remove('video-modal-open');
+        });
+      });
+
+      // Mobile-friendly play overlay: tap overlay to start the video
+      document.querySelectorAll('.video-wrap').forEach(w => {
+        const video = w.querySelector('video');
+        const overlay = w.querySelector('.video-play-overlay');
+        if (!video || !overlay) return;
+
+        const isMobile = window.matchMedia('(max-width:640px)').matches || ('ontouchstart' in window);
+        // Show overlay only on mobile/touch devices
+        if (!isMobile) overlay.style.display = 'none';
+
+        overlay.addEventListener('click', (e) => {
+          e.stopPropagation();
+          video.play().catch(() => {});
+        });
+
+        video.addEventListener('play', () => {
+          overlay.style.display = 'none';
+          video.controls = true;
+        });
+        video.addEventListener('pause', () => {
+          if (window.matchMedia('(max-width:640px)').matches) overlay.style.display = 'flex';
+        });
+
+        // If video is already paused on load and on mobile, ensure overlay visible
+        if (video.paused && isMobile) overlay.style.display = 'flex';
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.video-wrap.expanded').forEach(w => w.classList.remove('expanded'));
+          body.classList.remove('video-modal-open');
+        }
+      });
+      document.querySelectorAll('.video-wrap').forEach(w => {
+        w.addEventListener('click', (e) => {
+          if (w.classList.contains('expanded') && e.target === w) {
+            w.classList.remove('expanded');
+            body.classList.remove('video-modal-open');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
